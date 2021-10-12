@@ -1,1 +1,21 @@
 
+
+
+
+虚拟环境启动指令（optional）
+env\Scripts\activate.bat
+
+运行
+python App.py
+
+
+
+环境配置教程：
+https://doc.qt.io/qtforpython/quickstart.html
+
+pyqt document 
+
+分工
+Austin: getZoomChat()
+ZengH & Aman : GUI, interface of app 
+Zengh & KaiC : serialSend(),serialReceive() ... (the communication between app and arduino)
