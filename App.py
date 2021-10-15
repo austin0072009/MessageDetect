@@ -26,7 +26,7 @@ class MyWidget(QtWidgets.QWidget):
 
 # new class & function add below
 
-
+print("Testing")
 
 
 if __name__ == "__main__":
