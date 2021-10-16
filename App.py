@@ -40,7 +40,7 @@ bluetooth.flushInput() #This gives the bluetooth a little kick
 
 incomMessage=0
 while incomMessage:
-        print("Ping")
+        print("Pingg")
         #What do we want to send to bluetooth?
         bluetooth.write(b"BOOP"+str.encode(str(1)))#These need to be bytes not unicode, plus a number
         input_data=bluetooth.readline()#This reads the incoming data. In this particular example it will be the "Hello from Blue" line
