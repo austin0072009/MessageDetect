@@ -33,18 +33,22 @@ void loop()
     count++;//Increment the line counter
   }
   if(prev!=0){
-    for (int j=0;j<inint;j++){
+    for (int j=0;j<prev;j++){
       buttonState = digitalRead(buttonPin);
       if (buttonState==LOW && holdstop==0){
         digitalWrite(motorPin, HIGH); //vibrate
+        digitalWrite(ledPin, HIGH);
         delay(100);  // delay one milisecond
         digitalWrite(motorPin, LOW);  //stop vibrating
-        delay((1000/inint)-100); //wait   
+        digitalWrite(ledPin, LOW)
+        delay((1000/prev)-100); //holtfup
       }
       else{
         digitalWrite(motorPin, LOW);
+        digitalWrite(ledPin, LOW)
         if(holdstop==0)holdstop=1;
         prev=0;
+        break;
       }
     }
   }
