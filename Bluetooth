@@ -30,28 +30,22 @@ void loop()
     inint=serial_connection.read();//Read one byte
     prev=inint;
     holdstop=0;
-    for (int j=0;j<inint;j++){
-      digitalWrite(motorPin, HIGH); //vibrate
-      delay(100);  // delay one milisecond
-      digitalWrite(motorPin, LOW);  //stop vibrating
-      delay((1000/inint)-100); //wait 
-    }
     count++;//Increment the line counter
   }
-  else{
-    if(prev!=0){
-      for (int j=0;j<prev;j++){
+  if(prev!=0){
+    for (int j=0;j<inint;j++){
+      buttonState = digitalRead(buttonPin);
+      if (buttonState==LOW && holdstop==0){
         digitalWrite(motorPin, HIGH); //vibrate
         delay(100);  // delay one milisecond
         digitalWrite(motorPin, LOW);  //stop vibrating
-        delay((1000/inint)-100); //wait 
+        delay((1000/inint)-100); //wait   
+      }
+      else{
+        digitalWrite(motorPin, LOW);
+        if(holdstop==0)holdstop=1;
+        prev=0;
       }
     }
-  }
-  if(buttonState == HIGH)//Again this is an arbitrary choice. It would probably be something like: MOTOR_STOP
-  {
-    digitalWrite(motorPin, LOW);
-    holdstop=1;
-    prev=0;
   }
 }
