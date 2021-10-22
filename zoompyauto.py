@@ -1,5 +1,6 @@
 import cv2 as cv
 import time
+import serial
 from WindowCapture import Window_Capture
 
 chat1_img= cv.imread('chat1.jpg',1)
@@ -15,6 +16,12 @@ range2= 60                      #range 2= 30s-60s
 range3= 90                      #range 3= 60s-90s
 range4= 120                     #range 4= 90s-120s
 threshold= 0.80                 #threshold for detect image
+
+port="/dev/tty.HC-06-DevB" #This will be different for various devices and on windows it will probably be a COM port.
+bluetooth=serial.Serial(port, 9600)#Start communications with the bluetooth unit
+print("Connected")
+bluetooth.flushInput() #This gives the bluetooth a little kick
+
 
 Start_stop= True                #control from pyQt GUI
 while Start_stop:
@@ -51,7 +58,7 @@ while Start_stop:
             screenshot_count= screenshot_count+1
             print(range_level)
             # send range level to arduino
-
+    bluetooth.write(range_level)#These need to be bytes not unicode, plus a number
 
     time.sleep(screenshot_interval)
 
