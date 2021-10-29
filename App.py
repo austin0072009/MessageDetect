@@ -4,6 +4,7 @@ import random
 from PySide6 import QtCore, QtWidgets, QtGui
 import cv2 as cv
 import time
+import serial
 from WindowCapture import Window_Capture
 
 chat1_img= cv.imread('chat1.jpg',1)
@@ -19,6 +20,10 @@ range2= 60                      #range 2= 30s-60s
 range3= 90                      #range 3= 60s-90s
 range4= 120                     #range 4= 90s-120s
 threshold= 0.80                 #threshold for detect image
+
+bluetooth=serial.Serial('COM4', 9600)#Start communications with the bluetooth unit
+print("Connected")
+bluetooth.flushInput() #This gives the bluetooth a little kick
 
 # function and class from Qt
 class MyWidget(QtWidgets.QWidget):
