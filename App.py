@@ -58,33 +58,25 @@ class MyWidget(QtWidgets.QWidget):
                     range_level=1
                     screenshot_count= screenshot_count+1
                     print(range_level)
-                    #send range level to arduino
-                    bluetooth.write(tr.encode(str(1)))
                 elif screenshot_count>=(range1/screenshot_interval) and screenshot_count<(range2/screenshot_interval):
                     range_level=2
                     screenshot_count= screenshot_count+1
                     print(range_level)
-                    # send range level to arduino
-                    bluetooth.write(tr.encode(str(2)))
                 elif  screenshot_count>=(range2/screenshot_interval) and screenshot_count<(range3/screenshot_interval):
                     range_level=3
                     screenshot_count= screenshot_count+1
                     print(range_level)
-                    # send range level to arduino
                     bluetooth.write(tr.encode(str(3)))
                 elif screenshot_count >= (range3 / screenshot_interval) and screenshot_count < (range4 / screenshot_interval):
                     range_level= 4
                     screenshot_count = screenshot_count + 1
                     print(range_level)
-                    # send range level to arduino
-                    bluetooth.write(tr.encode(str(4)))
                 else:
                     range_level= 5
                     screenshot_count= screenshot_count+1
                     print(range_level)
-                    # send range level to arduino
-                    bluetooth.write(tr.encode(str(5)))
-
+            # send range level to arduino        
+            bluetooth.write(range_level)
             time.sleep(screenshot_interval)
 
 # new class & function add below
