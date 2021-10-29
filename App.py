@@ -4,7 +4,7 @@ import random
 from PySide6.QtCore import Qt, QThread, Signal, Slot
 from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap
 from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox,
-                               QHBoxLayout, QLabel, QMainWindow, QPushButton,
+                               QHBoxLayout, QLabel, QLineEdit, QPushButton,
                                QSizePolicy, QVBoxLayout, QWidget)
 import cv2 as cv
 import time,threading
@@ -27,33 +27,38 @@ range3= 90                      #range 3= 60s-90s
 range4= 120                     #range 4= 90s-120s
 threshold= 0.80                 #threshold for detect image
 
-bluetooth=serial.Serial('COM4', 9600)#Start communications with the bluetooth unit
+#bluetooth=serial.Serial('COM4', 9600)#Start communications with the bluetooth unit
 print("Connected")
-bluetooth.flushInput() #This gives the bluetooth a little kick
+#bluetooth.flushInput() #This gives the bluetooth a little kick
 
 # function and class from Qt
 class MyWidget(QWidget):
+
     def __init__(self):
         super().__init__()
+
 
         self.hello = ["Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
 
         self.buttonStart = QPushButton("Start")
         self.buttonEnd = QPushButton("End")
 
+        self.textBox = QLineEdit(self)
  
 
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.buttonStart)
         self.layout.addWidget(self.buttonEnd)
+        self.layout.addWidget(self.textBox)
 
 
         self.buttonStart.clicked.connect(lambda: self.Detection(True))
         self.buttonEnd.clicked.connect(lambda: self.Detection(False))
+        #self.signal_text_set.connect(self.SetText)
 
         # run in thread
         self.th = Thread(self)
-
+        self.th.signal_text_set.connect(self.SetText)
 
 
 
@@ -67,6 +72,9 @@ class MyWidget(QWidget):
             self.th.terminate()
             time.sleep(1)
             print("Stop")
+
+    def SetText(self,str):
+        self.textBox.setText(str)
 # new class & function add below
 
 #########################################################################
@@ -89,6 +97,8 @@ class MyWidget(QWidget):
 
 #################################################################################
 class Thread(QThread):
+    signal_text_set = Signal(str)
+
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
         self.startStop = None
@@ -105,6 +115,7 @@ class Thread(QThread):
             if Detect_result==0:
                 screenshot_count=0
                 print("nothing")
+                self.signal_text_set.emit("nothing")
             else:
                 if screenshot_count<(range1/screenshot_interval):
                     range_level=1
@@ -127,6 +138,8 @@ class Thread(QThread):
                     range_level= 5
                     screenshot_count= screenshot_count+1
                     print(range_level)
+                self.signal_text_set.emit(range_level)
+
             # send range level to arduino        
             bluetooth.write(range_level)
             time.sleep(screenshot_interval)
