@@ -26,7 +26,7 @@ void loop()
 {
   byte byte_count=serial_connection.available();//This gets the number of bytes that were sent by the python script
   buttonState = digitalRead(buttonPin);
-  if(byte_count)//If there are any bytes then deal with them
+  if(byte_count && !buttonState)//If there are any bytes then deal with them
   {
     inint=serial_connection.read();//Read one byte
     prev=inint;
