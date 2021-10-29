@@ -1,9 +1,13 @@
 import PySide6.QtCore
 import sys
 import random
-from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtCore import Qt, QThread, Signal, Slot
+from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap
+from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox,
+                               QHBoxLayout, QLabel, QMainWindow, QPushButton,
+                               QSizePolicy, QVBoxLayout, QWidget)
 import cv2 as cv
-import time
+import time,threading
 from WindowCapture import Window_Capture
 
 chat1_img= cv.imread('chat1.jpg',1)
@@ -21,18 +25,18 @@ range4= 120                     #range 4= 90s-120s
 threshold= 0.80                 #threshold for detect image
 
 # function and class from Qt
-class MyWidget(QtWidgets.QWidget):
+class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
 
         self.hello = ["Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
 
-        self.buttonStart = QtWidgets.QPushButton("Start")
-        self.buttonEnd = QtWidgets.QPushButton("End")
+        self.buttonStart = QPushButton("Start")
+        self.buttonEnd = QPushButton("End")
 
  
 
-        self.layout = QtWidgets.QVBoxLayout(self)
+        self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.buttonStart)
         self.layout.addWidget(self.buttonEnd)
 
@@ -40,12 +44,53 @@ class MyWidget(QtWidgets.QWidget):
         self.buttonStart.clicked.connect(lambda: self.Detection(True))
         self.buttonEnd.clicked.connect(lambda: self.Detection(False))
 
+        # run in thread
+        self.th = Thread(self)
 
 
-    @QtCore.Slot()
-    def Detection(self,Start_stop):
-        Start_stop= True                #control from pyQt GUI
-        while Start_stop:
+
+
+    @Slot()
+    def Detection(self,startStop):
+        if(startStop):
+            self.th.setState(startStop)
+            self.th.start()
+        else:
+            self.th.setState(startStop)
+            self.th.terminate()
+            time.sleep(1)
+            print("Stop")
+# new class & function add below
+
+#########################################################################
+#Python to Arduino
+
+# import serial
+
+# print("Start")
+# port="/dev/tty.HC-06-DevB" #This will be different for various devices and on windows it will probably be a COM port.
+# bluetooth=serial.Serial(port, 9600)#Start communications with the bluetooth unit
+# print("Connected")
+# bluetooth.flushInput() #This gives the bluetooth a little kick
+
+
+
+
+
+# bluetooth.close() #Otherwise the connection will remain open until a timeout which ties up the /dev/thingamabob
+# print("Done")
+
+#################################################################################
+class Thread(QThread):
+    def __init__(self, parent=None):
+        QThread.__init__(self, parent)
+        self.startStop = None
+
+    def setState(self,startStop):
+        self.startStop = startStop
+
+    def run(self):
+        while self.startStop:
 
             Window= Window_Capture(target,threshold)
             Detect_result= Window.getScreenshot()
@@ -87,30 +132,9 @@ class MyWidget(QtWidgets.QWidget):
 
             time.sleep(screenshot_interval)
 
-# new class & function add below
-
-#########################################################################
-#Python to Arduino
-
-# import serial
-
-# print("Start")
-# port="/dev/tty.HC-06-DevB" #This will be different for various devices and on windows it will probably be a COM port.
-# bluetooth=serial.Serial(port, 9600)#Start communications with the bluetooth unit
-# print("Connected")
-# bluetooth.flushInput() #This gives the bluetooth a little kick
-
-
-
-
-
-# bluetooth.close() #Otherwise the connection will remain open until a timeout which ties up the /dev/thingamabob
-# print("Done")
-
-#################################################################################
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication([])
+    app = QApplication([])
 
     widget = MyWidget()
     widget.resize(800, 600)
