@@ -1,0 +1,30 @@
+
+
+
+
+虚拟环境启动指令（optional）
+env\Scripts\activate.bat
+
+运行
+python App.py
+
+For Zoom detect:
+import cv2 (pip install opencv-python)
+import pyautogui
+
+download WindowCapture.py
+download chat1.jpg
+运行
+python zoompyauto.py
+
+
+环境配置教程：
+https://doc.qt.io/qtforpython/quickstart.html
+
+pyqt document 
+
+分工
+Austin: P2P communication
+Aman : GUI, interface of app 
+Zeng: get zoom mesasage
+KaiC : serialSend(),serialReceive() ... (the communication between app and arduino)
