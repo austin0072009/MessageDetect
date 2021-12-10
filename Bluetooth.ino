@@ -21,7 +21,9 @@ void setup()
   pinMode(motorPin, OUTPUT);// initialize the motor as an output;
   pinMode(ledPin, OUTPUT); // initialize the LED pin as an output;
   pinMode(buttonPin, INPUT);// initialize the pushbutton pin as an input:
+  Serial.printIn("Started");
 }
+
 void loop()
 {
   byte byte_count=serial_connection.available();//This gets the number of bytes that were sent by the python script
