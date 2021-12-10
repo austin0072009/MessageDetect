@@ -27,9 +27,9 @@ range3= 90                      #range 3= 60s-90s
 range4= 120                     #range 4= 90s-120s
 threshold= 0.80                 #threshold for detect image
 
-#bluetooth=serial.Serial('COM4', 9600)#Start communications with the bluetooth unit
+bluetooth=serial.Serial('COM4', 9600)#Start communications with the bluetooth unit
 print("Connected")
-#bluetooth.flushInput() #This gives the bluetooth a little kick
+bluetooth.flushInput() #This gives the bluetooth a little kick
 
 # function and class from Qt
 class MyWidget(QWidget):
