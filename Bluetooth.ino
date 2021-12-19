@@ -1,5 +1,5 @@
 #include "SoftwareSerial.h"
-SoftwareSerial serial_connection(10, 11);//Create a serial connection with TX and RX on these pins
+SoftwareSerial serial_connection(11, 11);//Create a serial connection with TX and RX on these pins
 #define BUFFER_SIZE 64//This will prevent buffer overruns.
 int inData[BUFFER_SIZE];//This is a character buffer where the data sent by the python script will go.
 inr inint=-1;//Initialie the first character as nothing
