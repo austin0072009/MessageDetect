@@ -1,4 +1,4 @@
-import PySide6.QtCore
+import PySide7.QtCore
 import sys
 import random
 from PySide6.QtCore import Qt, QThread, Signal, Slot
@@ -26,11 +26,12 @@ range2= 60                      #range 2= 30s-60s
 range3= 90                      #range 3= 60s-90s
 range4= 120                     #range 4= 90s-120s
 threshold= 0.80                 #threshold for detect image
+toblu=b'0'
 
-bluetooth=serial.Serial('COM4', 9600)#Start communications with the bluetooth unit
+bluetooth=serial.Serial('COM7', 9600)#Start communications with the bluetooth unit
 print("Connected")
 bluetooth.flushInput() #This gives the bluetooth a little kick
-
+flblu=1
 # function and class from Qt
 class MyWidget(QWidget):
 
@@ -65,6 +66,11 @@ class MyWidget(QWidget):
     @Slot()
     def Detection(self,startStop):
         if(startStop):
+            if ~flblu:
+                bluetooth=serial.Serial('COM7', 9600)#Start communications with the bluetooth unit
+                print("Connected")
+                bluetooth.flushInput() #This gives the bluetooth a little kick
+
             self.th.setState(startStop)
             self.th.start()
         else:
@@ -72,30 +78,15 @@ class MyWidget(QWidget):
             self.th.terminate()
             time.sleep(1)
             print("Stop")
+            bluetooth.close() #Otherwise the connection will remain open until a timeout which ties up the /dev/thingamabob
+            print("Done")
+            flblu=0
 
     def SetText(self,str):
         self.textBox.setText(str)
+
+        
 # new class & function add below
-
-#########################################################################
-#Python to Arduino
-
-# import serial
-
-# print("Start")
-# port="/dev/tty.HC-06-DevB" #This will be different for various devices and on windows it will probably be a COM port.
-# bluetooth=serial.Serial(port, 9600)#Start communications with the bluetooth unit
-# print("Connected")
-# bluetooth.flushInput() #This gives the bluetooth a little kick
-
-
-
-
-
-# bluetooth.close() #Otherwise the connection will remain open until a timeout which ties up the /dev/thingamabob
-# print("Done")
-
-#################################################################################
 class Thread(QThread):
     signal_text_set = Signal(str)
 
@@ -119,29 +110,33 @@ class Thread(QThread):
             else:
                 if screenshot_count<(range1/screenshot_interval):
                     range_level=1
+                    toblu=b'1'
                     screenshot_count= screenshot_count+1
                     print(range_level)
                 elif screenshot_count>=(range1/screenshot_interval) and screenshot_count<(range2/screenshot_interval):
                     range_level=2
+                    toblu=b'2'
                     screenshot_count= screenshot_count+1
                     print(range_level)
                 elif  screenshot_count>=(range2/screenshot_interval) and screenshot_count<(range3/screenshot_interval):
                     range_level=3
+                    toblu=b'3'
                     screenshot_count= screenshot_count+1
                     print(range_level)
-                    bluetooth.write(tr.encode(str(3)))
                 elif screenshot_count >= (range3 / screenshot_interval) and screenshot_count < (range4 / screenshot_interval):
                     range_level= 4
+                    toblu=b'4'  
                     screenshot_count = screenshot_count + 1
                     print(range_level)
                 else:
                     range_level= 5
+                    toblu=b'5'
                     screenshot_count= screenshot_count+1
                     print(range_level)
                 self.signal_text_set.emit(range_level)
 
             # send range level to arduino        
-            bluetooth.write(range_level)
+            bluetooth.write(toblu)#bluetooth.write(str.encode(str(i)))
             time.sleep(screenshot_interval)
 
 
@@ -151,8 +146,6 @@ if __name__ == "__main__":
     widget = MyWidget()
     widget.resize(800, 600)
     widget.show()
-
     sys.exit(app.exec())
-
-
+   
 
