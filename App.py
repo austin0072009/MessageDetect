@@ -14,6 +14,8 @@ import serial
 from WindowCapture import Window_Capture
 
 chat1_img= cv.imread('chat1.jpg',1)
+chat2_img = cv.imread('tencentchat.jpg',1)
+
 
 target=chat1_img                #image we want to find from screenshot
 
@@ -34,17 +36,14 @@ toblu=b'0'
 # flblu=1
 # function and class from Qt
 class MyWidget(QWidget):
-    num_grid_rows = 3
-    num_buttons = 4
     def __init__(self):
         super().__init__()
-      
+        State = 2
         
         self.buttonState1 = QPushButton("Tencent")
         self.buttonState2 = QPushButton("Zoom")
         self.buttonStart = QPushButton("Start")
         self.buttonEnd = QPushButton("End")
-        self.buttonState1.setEnabled(False)
         self.textBox = QLineEdit(self)
         
 
@@ -67,7 +66,8 @@ class MyWidget(QWidget):
         self.buttonStart.clicked.connect(lambda: self.Detection(True))
         self.buttonEnd.clicked.connect(lambda: self.Detection(False))
         #self.signal_text_set.connect(self.SetText)
-
+        self.buttonState1.clicked.connect(lambda: self.selectState1(1))
+        self.buttonState2.clicked.connect(lambda: self.selectState2(2))
         # run in thread
         self.th = Thread(self)
         self.th.signal_text_set.connect(self.SetText)
@@ -96,6 +96,23 @@ class MyWidget(QWidget):
     def SetText(self,str):
         self.textBox.setText(str)
 
+    def selectState1(self,state):
+        self.th.setMode(state)
+        print("State :" ,state)
+        self.buttonState1.setEnabled(False)
+        self.buttonState2.setEnabled(True)
+
+
+
+    def selectState2(self,state):
+        self.th.setMode(state)
+        print("State :" ,state)
+
+        self.buttonState2.setEnabled(False)
+        self.buttonState1.setEnabled(True)
+
+
+
         
 # new class & function add below
 class Thread(QThread):
@@ -104,18 +121,25 @@ class Thread(QThread):
     def __init__(self, parent=None):
         QThread.__init__(self, parent)
         self.startStop = None
+        self.state = 2
 
     def setState(self,startStop):
         self.startStop = startStop
+    def setMode(self,state):
+        self.state = state
 
     def run(self):
         # State = 1 zoom detect
         # State = 2 Tencent detect
         while self.startStop:
 
+            if(self.state == 2):
+                target = chat1_img
+            else:
+                target = chat2_img
             Window= Window_Capture(target,threshold)
             Detect_result= Window.getScreenshot()
-
+            print(target)
             if Detect_result==0:
                 screenshot_count=0
                 print("nothing")
