@@ -1,4 +1,4 @@
-import PySide7.QtCore
+import PySide6.QtCore
 import sys
 import random
 from PySide6.QtCore import Qt, QThread, Signal, Slot
@@ -28,10 +28,10 @@ range4= 120                     #range 4= 90s-120s
 threshold= 0.80                 #threshold for detect image
 toblu=b'0'
 
-bluetooth=serial.Serial('COM7', 9600)#Start communications with the bluetooth unit
-print("Connected")
-bluetooth.flushInput() #This gives the bluetooth a little kick
-flblu=1
+# bluetooth=serial.Serial('COM7', 9600)#Start communications with the bluetooth unit
+# print("Connected")
+# bluetooth.flushInput() #This gives the bluetooth a little kick
+# flblu=1
 # function and class from Qt
 class MyWidget(QWidget):
     num_grid_rows = 3
@@ -77,10 +77,10 @@ class MyWidget(QWidget):
     @Slot()
     def Detection(self,startStop):
         if(startStop):
-            if ~flblu:
-                bluetooth=serial.Serial('COM7', 9600)#Start communications with the bluetooth unit
-                print("Connected")
-                bluetooth.flushInput() #This gives the bluetooth a little kick
+            # if ~flblu:
+                # bluetooth=serial.Serial('COM7', 9600)#Start communications with the bluetooth unit
+                # print("Connected")
+                # bluetooth.flushInput() #This gives the bluetooth a little kick
 
             self.th.setState(startStop)
             self.th.start()
@@ -89,9 +89,9 @@ class MyWidget(QWidget):
             self.th.terminate()
             time.sleep(1)
             print("Stop")
-            bluetooth.close() #Otherwise the connection will remain open until a timeout which ties up the /dev/thingamabob
+            # bluetooth.close() #Otherwise the connection will remain open until a timeout which ties up the /dev/thingamabob
             print("Done")
-            flblu=0
+            # flblu=0
 
     def SetText(self,str):
         self.textBox.setText(str)
@@ -123,35 +123,35 @@ class Thread(QThread):
             else:
                 if screenshot_count<(range1/screenshot_interval):
                     range_level=1
-                    toblu=b'1'
+                    # toblu=b'1'
                     screenshot_count= screenshot_count+1
                     print(range_level)
                 elif screenshot_count>=(range1/screenshot_interval) and screenshot_count<(range2/screenshot_interval):
                     range_level=2
-                    toblu=b'2'
+                    # toblu=b'2'
                     screenshot_count= screenshot_count+1
                     print(range_level)
                 elif  screenshot_count>=(range2/screenshot_interval) and screenshot_count<(range3/screenshot_interval):
                     range_level=3
-                    toblu=b'3'
+                    # toblu=b'3'
                     screenshot_count= screenshot_count+1
                     print(range_level)
                     # bluetooth.write(tr.encode(str(3)))
                 elif screenshot_count >= (range3 / screenshot_interval) and screenshot_count < (range4 / screenshot_interval):
                     range_level= 4
-                    toblu=b'4'  
+                    # toblu=b'4'  
                     screenshot_count = screenshot_count + 1
                     print(range_level)
                 else:
                     range_level= 5
-                    toblu=b'5'
+                    # toblu=b'5'
                     screenshot_count= screenshot_count+1
                     print(range_level)
                 self.signal_text_set.emit(range_level)
 
             # send range level to arduino        
             # bluetooth.write(range_level)
-            bluetooth.write(toblu)#bluetooth.write(str.encode(str(i)))
+            # bluetooth.write(toblu)#bluetooth.write(str.encode(str(i)))
             time.sleep(screenshot_interval)
 
 
