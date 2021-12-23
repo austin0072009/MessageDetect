@@ -131,7 +131,7 @@ class Thread(QThread):
     def run(self):
         # State = 1 zoom detect
         # State = 2 Tencent detect
-        while self.startStop:
+       while self.startStop:
 
             if(self.state == 2):
                 target = chat1_img
@@ -139,39 +139,43 @@ class Thread(QThread):
                 target = chat2_img
             Window= Window_Capture(target,threshold)
             Detect_result= Window.getScreenshot()
-            print(target)
+            # print(target)
             if Detect_result==0:
                 screenshot_count=0
-                print("nothing")
-                self.signal_text_set.emit("nothing")
+                print("No new message")
+                self.signal_text_set.emit("No new message")
             else:
                 if screenshot_count<(range1/screenshot_interval):
                     range_level=1
                     # toblu=b'1'
                     screenshot_count= screenshot_count+1
-                    print(range_level)
+                    self.signal_text_set.emit("New Message Detected...")
+                    print("Mode:"+str(range_level))
                 elif screenshot_count>=(range1/screenshot_interval) and screenshot_count<(range2/screenshot_interval):
                     range_level=2
                     # toblu=b'2'
                     screenshot_count= screenshot_count+1
-                    print(range_level)
+                    self.signal_text_set.emit("Please check your inbox...")
+                    print("Mode:"+str(range_level))
                 elif  screenshot_count>=(range2/screenshot_interval) and screenshot_count<(range3/screenshot_interval):
                     range_level=3
                     # toblu=b'3'
                     screenshot_count= screenshot_count+1
-                    print(range_level)
+                    self.signal_text_set.emit("Please check your inbox...")
+                    print("Mode:"+str(range_level))
                     # bluetooth.write(tr.encode(str(3)))
                 elif screenshot_count >= (range3 / screenshot_interval) and screenshot_count < (range4 / screenshot_interval):
                     range_level= 4
                     # toblu=b'4'  
                     screenshot_count = screenshot_count + 1
-                    print(range_level)
+                    self.signal_text_set.emit("Please check your inbox...")
+                    print("Mode:"+str(range_level))
                 else:
                     range_level= 5
                     # toblu=b'5'
                     screenshot_count= screenshot_count+1
-                    print(range_level)
-                self.signal_text_set.emit(range_level)
+                    self.signal_text_set.emit("Please check your inbox...")
+                    print("Mode:"+str(range_level))
 
             # send range level to arduino        
             # bluetooth.write(range_level)
