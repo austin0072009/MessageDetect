@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt, QThread, Signal, Slot
 from PySide6.QtGui import QAction, QImage, QKeySequence, QPixmap
 from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox,
                                QHBoxLayout, QLabel, QLineEdit, QPushButton,
-                               QSizePolicy, QVBoxLayout, QWidget)
+                               QSizePolicy, QVBoxLayout, QWidget,QGridLayout)
 import cv2 as cv
 import time,threading
 import serial
@@ -33,23 +33,34 @@ print("Connected")
 
 # function and class from Qt
 class MyWidget(QWidget):
-
+    num_grid_rows = 3
+    num_buttons = 4
     def __init__(self):
         super().__init__()
-
-
-        self.hello = ["Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
-
+      
+        
+        self.buttonState1 = QPushButton("Tencent")
+        self.buttonState2 = QPushButton("Zoom")
         self.buttonStart = QPushButton("Start")
         self.buttonEnd = QPushButton("End")
-
+        self.buttonState1.setEnabled(False)
         self.textBox = QLineEdit(self)
- 
+        
 
-        self.layout = QVBoxLayout(self)
+        self.layout = QHBoxLayout()
         self.layout.addWidget(self.buttonStart)
         self.layout.addWidget(self.buttonEnd)
+
+        self.layout2 = QHBoxLayout()
+        self.layout2.addWidget(self.buttonState1)
+        self.layout2.addWidget(self.buttonState2)
         self.layout.addWidget(self.textBox)
+
+        self.main_layout = QVBoxLayout(self)
+        self.main_layout.addLayout(self.layout2)
+        self.main_layout.addLayout(self.layout)
+
+        self.setLayout(self.main_layout)
 
 
         self.buttonStart.clicked.connect(lambda: self.Detection(True))
@@ -107,6 +118,8 @@ class Thread(QThread):
         self.startStop = startStop
 
     def run(self):
+        # State = 1 zoom detect
+        # State = 2 Tencent detect
         while self.startStop:
 
             Window= Window_Capture(target,threshold)
@@ -129,7 +142,7 @@ class Thread(QThread):
                     range_level=3
                     screenshot_count= screenshot_count+1
                     print(range_level)
-                    bluetooth.write(tr.encode(str(3)))
+                    # bluetooth.write(tr.encode(str(3)))
                 elif screenshot_count >= (range3 / screenshot_interval) and screenshot_count < (range4 / screenshot_interval):
                     range_level= 4
                     screenshot_count = screenshot_count + 1
@@ -141,7 +154,7 @@ class Thread(QThread):
                 self.signal_text_set.emit(range_level)
 
             # send range level to arduino        
-            bluetooth.write(range_level)
+            # bluetooth.write(range_level)
             time.sleep(screenshot_interval)
 
 
@@ -149,7 +162,7 @@ if __name__ == "__main__":
     app = QApplication([])
 
     widget = MyWidget()
-    widget.resize(800, 600)
+    widget.resize(400,300)
     widget.show()
 
     sys.exit(app.exec())
